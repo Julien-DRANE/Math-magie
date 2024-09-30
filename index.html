@@ -25,14 +25,13 @@
             <!-- Panneau de gauche : Boutons de contrôle -->
             <div class="left-panel">
                 <div class="game-controls">
-                    <button id="new-game-button">Nouvelle Partie</button>
-                    <button id="next-student-button">Élève Suivant</button>
-                    <button id="undo-button">Retour en Arrière</button>
+                    <button id="new-game-button" aria-label="Commencer une nouvelle partie">Nouvelle Partie</button>
+                    <button id="next-student-button" aria-label="Passer à l'élève suivant">Élève Suivant</button>
+                    <button id="undo-button" aria-label="Annuler la dernière action">Retour en Arrière</button>
                     <!-- Bouton "Magique" -->
-                    <button id="magic-button">Magique</button>
-					<button id="start-timer-button">Démarrer Chrono</button>
-					<div id="timer-display" class="timer">04:00</div>
-
+                    <button id="magic-button" aria-label="Activer la magie">Magique</button>
+                    <button id="start-timer-button" aria-label="Démarrer le chronomètre">Démarrer Chrono</button>
+                    <div id="timer-display" class="timer">04:00</div>
                 </div>
             </div>
             
@@ -55,10 +54,10 @@
                 
                 <!-- Zone de sélection des opérations -->
                 <div class="operations">
-                    <button class="op-button" data-op="+">+</button>
-                    <button class="op-button" data-op="-">−</button>
-                    <button class="op-button" data-op="*">×</button>
-                    <button class="op-button" data-op="/">÷</button>
+                    <button class="op-button" data-op="+" aria-label="Additionner">+</button>
+                    <button class="op-button" data-op="-" aria-label="Soustraire">−</button>
+                    <button class="op-button" data-op="*" aria-label="Multiplier">×</button>
+                    <button class="op-button" data-op="/" aria-label="Diviser">÷</button>
                 </div>
                 
                 <!-- Zone d'affichage des nombres sélectionnés -->
