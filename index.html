@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Balises méta -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jeu de mathématiques basé sur les opérations arithmétiques.">
+    <title>Mathémagie</title>
+    <!-- Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête du jeu -->
+        <header>
+            <h1 class="logo">Mathémagie</h1>
+            <!-- Grille des points réduite -->
+            <div class="score-grid">
+                <p><strong>Points :</strong> + (1pt), − (2pts), × (3pts), ÷ (5pts), Bonus 4 opérateurs (10pts)</p>
+            </div>
+        </header>
+        
+        <!-- Zone de jeu principale -->
+        <div class="game-area">
+            <!-- Panneau de gauche : Boutons de contrôle -->
+            <div class="left-panel">
+                <div class="game-controls">
+                    <button id="new-game-button">Nouvelle Partie</button>
+                    <button id="next-student-button">Élève Suivant</button>
+                    <button id="undo-button">Retour en Arrière</button>
+                    <!-- Bouton "Magique" -->
+                    <button id="magic-button">Magique</button>
+					<button id="start-timer-button">Démarrer Chrono</button>
+					<div id="timer-display" class="timer">04:00</div>
+
+                </div>
+            </div>
+            
+            <!-- Panneau central : Cible, Nombres, Opérations, Calcul -->
+            <div class="center-panel">
+                <!-- Zone d'affichage de la cible -->
+                <div class="target">
+                    <h2>Cible</h2>
+                    <div id="cible" class="target-value">0</div>
+                </div>
+                
+                <!-- Zone de sélection des nombres -->
+                <div class="numbers-container">
+                    <div class="hex-number" id="number1">0</div>
+                    <div class="hex-number" id="number2">0</div>
+                    <div class="hex-number" id="number3">0</div>
+                    <div class="hex-number" id="number4">0</div>
+                    <div class="hex-number" id="number5">0</div>
+                </div>
+                
+                <!-- Zone de sélection des opérations -->
+                <div class="operations">
+                    <button class="op-button" data-op="+">+</button>
+                    <button class="op-button" data-op="-">−</button>
+                    <button class="op-button" data-op="*">×</button>
+                    <button class="op-button" data-op="/">÷</button>
+                </div>
+                
+                <!-- Zone d'affichage des nombres sélectionnés -->
+                <div class="selection-display">
+                    <span id="selected-num1" class="selected-num">?</span>
+                    <span id="selected-op" class="selected-op">?</span>
+                    <span id="selected-num2" class="selected-num">?</span>
+                </div>
+                
+                <!-- Bouton pour effectuer le calcul -->
+                <button id="calculate-button" class="calculate-button">Calculer</button>
+            </div>
+            
+            <!-- Panneau de droite : Historique et Solutions -->
+            <div class="right-panel">
+                <!-- Historique des opérations -->
+                <div class="history-container">
+                    <h3>Historique des opérations</h3>
+                    <div id="history" class="history"></div>
+                </div>
+                
+                <!-- Solutions proposées -->
+                <div class="solutions-container">
+                    <h3>Solutions proposées</h3>
+                    <table id="solutions-table">
+                        <thead>
+                            <tr>
+                                <th>Opération</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solutions-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fichier JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

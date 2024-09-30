@@ -1,0 +1,282 @@
+/* Style général */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #f0f4c3, #e1bee7);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* En-tête */
+header {
+    background-color: #ffcccb;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 2px solid #f48fb1;
+}
+
+h1.logo {
+    margin: 0;
+    font-size: 36px;
+    color: #333;
+}
+
+/* Grille des points réduite */
+.score-grid {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.score-grid p {
+    margin: 0;
+    padding: 5px;
+    background-color: #fffde7;
+    border: 1px solid #f57f17;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Zone de jeu */
+.game-area {
+    display: flex;
+    padding: 20px;
+}
+
+/* Panneau de gauche */
+.left-panel {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-controls button {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background-color: #8c9eff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.game-controls button:hover {
+    background-color: #536dfe;
+    transform: scale(1.05);
+}
+
+/* Style spécifique pour le bouton "Magique" */
+#magic-button {
+    background-color: #ba68c8;
+}
+
+#magic-button:hover {
+    background-color: #ab47bc;
+}
+
+/* Panneau central */
+.center-panel {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Cible */
+.target {
+    background-color: #fff9c4;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 50px;
+    text-align: center;
+    width: 80%;
+}
+
+.target h2 {
+    font-size: 24px;
+    margin: 0;
+    color: #333;
+}
+
+.target-value {
+    font-size: 48px;
+    font-weight: bold;
+    color: #f57f17;
+}
+
+/* Nombres */
+.numbers-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.hex-number {
+    width: 80px;
+    height: 80px;
+    background-color: #81d4fa;
+    border: 2px solid #f57f17;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+    color: #333;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.hex-number:hover {
+    background-color: #b3e5fc;
+    transform: scale(1.1);
+}
+
+.selected {
+    background-color: #ffab91;
+    border: 2px solid #f57f17;
+}
+
+/* Opérations */
+.operations {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.op-button {
+    width: 60px;
+    height: 60px;
+    background-color: #c5e1a5;
+    border: 2px solid #f57f17;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+    color: #333;
+    transition: transform 0.3s;
+}
+
+.op-button:hover {
+    transform: scale(1.1);
+}
+
+.op-button.selected-op {
+    background-color: #ffd54f;
+    border-color: #f57f17;
+}
+
+/* Sélection affichée */
+.selection-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fce4ec;
+    border: 2px solid #f57f17;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 80%;
+}
+
+.selected-num, .selected-op {
+    font-size: 36px;
+    margin: 0 10px;
+}
+
+/* Bouton calculer */
+.calculate-button {
+    padding: 15px 30px;
+    background-color: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.calculate-button:hover {
+    background-color: #fb8c00;
+    transform: scale(1.05);
+}
+
+/* Panneau de droite */
+.right-panel {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right-panel h3 {
+    text-align: center;
+}
+
+/* Historique */
+.history-container {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.history {
+    background-color: #e0f7fa;
+    border: 2px solid #f57f17;
+    padding: 10px;
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Solutions */
+.solutions-container {
+    width: 100%;
+}
+
+#solutions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#solutions-table th, #solutions-table td {
+    border: 1px solid #f57f17;
+    padding: 8px;
+    text-align: center;
+}
+
+#solutions-table th {
+    background-color: #fff9c4;
+}
+
+#solutions-table td {
+    background-color: #fffde7;
+}
+/* Style du chronomètre */
+.timer {
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #fffde7;
+    border: 2px solid #f57f17;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
