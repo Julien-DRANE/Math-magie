@@ -45,6 +45,7 @@ h1.logo {
 .game-area {
     display: flex;
     padding: 20px;
+    flex-wrap: wrap; /* Permet aux panneaux de se réorganiser */
 }
 
 /* Panneau de gauche */
@@ -268,6 +269,7 @@ h1.logo {
 #solutions-table td {
     background-color: #fffde7;
 }
+
 /* Style du chronomètre */
 .timer {
     font-size: 24px;
@@ -279,4 +281,56 @@ h1.logo {
     text-align: center;
     margin-top: 20px;
     color: #333;
+}
+
+/* Styles Responsives */
+@media (max-width: 768px) {
+    .left-panel, .right-panel {
+        width: 100%; /* Les panneaux prennent toute la largeur sur les petits écrans */
+    }
+    
+    .center-panel {
+        width: 100%; /* Le panneau central prend toute la largeur sur mobile */
+    }
+    
+    .game-area {
+        flex-direction: column; /* Empile les panneaux verticalement sur mobile */
+        padding: 10px; /* Réduit le padding */
+    }
+
+    h1.logo {
+        font-size: 28px; /* Réduit la taille de la police du logo */
+    }
+
+    .target-value {
+        font-size: 36px; /* Réduit la taille de la cible sur mobile */
+    }
+
+    .selected-num, .selected-op {
+        font-size: 24px; /* Réduit la taille de la sélection affichée */
+    }
+
+    .calculate-button {
+        width: 100%; /* Bouton calculer prend toute la largeur */
+    }
+
+    .game-controls button {
+        font-size: 14px; /* Réduit la taille de la police des boutons */
+    }
+
+    .hex-number {
+        width: 60px; /* Ajustement de la largeur des nombres */
+        height: 60px; /* Ajustement de la hauteur des nombres */
+        font-size: 20px; /* Réduit la taille de la police des nombres */
+    }
+
+    .op-button {
+        width: 50px; /* Ajustement de la largeur des boutons d'opération */
+        height: 50px; /* Ajustement de la hauteur des boutons d'opération */
+        font-size: 20px; /* Réduit la taille de la police des boutons d'opération */
+    }
+
+    .selection-display {
+        width: 90%; /* Ajustement de la largeur de la sélection affichée */
+    }
 }
