@@ -45,7 +45,7 @@ h1.logo {
 .game-area {
     display: flex;
     padding: 20px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Permet aux panneaux de se réorganiser */
 }
 
 /* Panneau de gauche */
@@ -54,10 +54,6 @@ h1.logo {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.mode-switch {
-    margin-top: 20px;
 }
 
 .game-controls {
@@ -91,16 +87,6 @@ h1.logo {
 
 #magic-button:hover {
     background-color: #ab47bc;
-}
-
-/* Style spécifique pour le bouton "Expert" */
-#expert-mode-button {
-    background-color: #64b5f6; /* Bleu pour indiquer une difficulté très accrue */
-    color: #fff;
-}
-
-#expert-mode-button:hover {
-    background-color: #42a5f5;
 }
 
 /* Panneau central */
@@ -154,7 +140,7 @@ h1.logo {
     cursor: pointer;
     margin: 10px;
     color: #333;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s ease;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .hex-number:hover {
@@ -165,7 +151,6 @@ h1.logo {
 .selected {
     background-color: #ffab91;
     border: 2px solid #f57f17;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Opérations */
@@ -186,7 +171,7 @@ h1.logo {
     cursor: pointer;
     margin: 10px;
     color: #333;
-    transition: transform 0.3s, background-color 0.3s ease;
+    transition: transform 0.3s;
 }
 
 .op-button:hover {
@@ -261,10 +246,6 @@ h1.logo {
     overflow-y: auto;
 }
 
-.history div.operation-entry {
-    margin-bottom: 5px;
-}
-
 /* Solutions */
 .solutions-container {
     width: 100%;
@@ -300,67 +281,56 @@ h1.logo {
     text-align: center;
     margin-top: 20px;
     color: #333;
-    transition: background-color 0.5s, color 0.5s, border-color 0.5s;
-}
-
-.timer.low-time {
-    background-color: #ff6f61; /* Rouge clair pour signaler l'urgence */
-    color: #fff;
-    border-color: #f44336;
 }
 
 /* Styles Responsives */
 @media (max-width: 768px) {
     .left-panel, .right-panel {
-        width: 100%;
+        width: 100%; /* Les panneaux prennent toute la largeur sur les petits écrans */
     }
     
     .center-panel {
-        width: 100%;
+        width: 100%; /* Le panneau central prend toute la largeur sur mobile */
     }
     
     .game-area {
-        flex-direction: column;
-        padding: 10px;
+        flex-direction: column; /* Empile les panneaux verticalement sur mobile */
+        padding: 10px; /* Réduit le padding */
     }
 
     h1.logo {
-        font-size: 28px;
+        font-size: 28px; /* Réduit la taille de la police du logo */
     }
 
     .target-value {
-        font-size: 36px;
+        font-size: 36px; /* Réduit la taille de la cible sur mobile */
     }
 
     .selected-num, .selected-op {
-        font-size: 24px;
+        font-size: 24px; /* Réduit la taille de la sélection affichée */
     }
 
     .calculate-button {
-        width: 100%;
+        width: 100%; /* Bouton calculer prend toute la largeur */
     }
 
     .game-controls button {
-        font-size: 14px;
+        font-size: 14px; /* Réduit la taille de la police des boutons */
     }
 
     .hex-number {
-        width: 60px;
-        height: 60px;
-        font-size: 20px;
+        width: 60px; /* Ajustement de la largeur des nombres */
+        height: 60px; /* Ajustement de la hauteur des nombres */
+        font-size: 20px; /* Réduit la taille de la police des nombres */
     }
 
     .op-button {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+        width: 50px; /* Ajustement de la largeur des boutons d'opération */
+        height: 50px; /* Ajustement de la hauteur des boutons d'opération */
+        font-size: 20px; /* Réduit la taille de la police des boutons d'opération */
     }
 
     .selection-display {
-        width: 90%;
-    }
-
-    .timer {
-        width: 100%;
+        width: 90%; /* Ajustement de la largeur de la sélection affichée */
     }
 }

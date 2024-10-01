@@ -73,11 +73,11 @@ function nextStudent() {
 // Fonction pour générer un ensemble de 5 nombres aléatoires
 function generateNumbers() {
     return [
-        getRandomInt(1, 10),
-        getRandomInt(1, 15),
-        getRandomInt(1, 20),
-        getRandomInt(1, 25),
-        getRandomInt(1, 30)
+        getRandomInt(1, 4),
+        getRandomInt(1, 6),
+        getRandomInt(1, 8),
+        getRandomInt(1, 12),
+        getRandomInt(1, 20)
     ];
 }
 
@@ -211,7 +211,8 @@ calculateButton.addEventListener('click', () => {
             return;
         }
 
-        // En mode Standard, on permet d'utiliser les opérateurs plusieurs fois
+        usedOperators.add(selectedOperator);
+
         const operationString = `${nombre1} ${selectedOperator} ${nombre2} = ${resultatOperation}`;
         operationsHistory.push(operationString);
 
@@ -420,3 +421,62 @@ function calculateOperationsScore(operations, usedOps) {
 
 // Initialiser le jeu avec une nouvelle partie
 startNewGame();
+// Variables pour le chronomètre
+let timerInterval;
+let timerDuration = 4 * 60; // 4 minutes en secondes
+let currentTime = timerDuration;
+
+// Sélection des éléments du DOM pour le chronomètre
+const timerDisplay = document.getElementById('timer-display');
+const startTimerButton = document.getElementById('start-timer-button');
+
+// Fonction pour démarrer le chronomètre
+function startTimer() {
+    clearInterval(timerInterval); // Réinitialiser le chronomètre si déjà en cours
+    currentTime = timerDuration; // Réinitialiser le temps à 4 minutes
+    updateTimerDisplay();
+
+    timerInterval = setInterval(() => {
+        currentTime--;
+        updateTimerDisplay();
+        if (currentTime <= 0) {
+            clearInterval(timerInterval);
+            alert("Le temps est écoulé !");
+        }
+    }, 1000); // Décrémente chaque seconde
+}
+
+// Fonction pour mettre à jour l'affichage du chronomètre
+function updateTimerDisplay() {
+    const minutes = Math.floor(currentTime / 60);
+    const seconds = currentTime % 60;
+    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Ajoute un événement pour le bouton de démarrage du chronomètre
+startTimerButton.addEventListener('click', startTimer);
+// Variable pour suivre l'état d'affichage des solutions
+let solutionsVisible = true;
+
+// Mettre à jour la fonction "findBestSolutions"
+function findBestSolutions() {
+    // Bascule l'affichage des solutions
+    solutionsVisible = !solutionsVisible;
+    const solutionsContainer = document.querySelector('.solutions-container');
+
+    if (solutionsVisible) {
+        const bestSolutions = getAllSolutions();
+        if (bestSolutions.length > 0) {
+            // Affiche les meilleures solutions dans les solutions proposées
+            solutions = solutions.concat(bestSolutions);
+            updateSolutions();
+            solutionsContainer.style.display = 'block'; // Affiche les solutions
+            alert(`Voici les solutions avec le score maximum de ${bestSolutions[0].score} points.`);
+        } else {
+            alert("Aucune solution trouvée pour atteindre la cible.");
+        }
+    } else {
+        // Cache les solutions
+        solutionsContainer.style.display = 'none';
+    }
+}
