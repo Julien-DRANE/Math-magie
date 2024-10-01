@@ -24,6 +24,7 @@ let operationsHistory = [];
 let solutions = [];
 let historyStack = [];
 let usedOperators = new Set();
+let isStandardMode = false; // Nouveau mode standard
 
 // Initialisation des éléments DOM
 const cibleElement = document.getElementById('cible');
@@ -38,11 +39,23 @@ const undoButton = document.getElementById('undo-button');
 const magicButton = document.getElementById('magic-button');
 const historyElement = document.getElementById('history');
 const solutionsBody = document.getElementById('solutions-body');
+const standardModeSwitch = document.getElementById('standard-mode-switch');
+
+// Écouteur pour activer le mode "Standard"
+standardModeSwitch.addEventListener('change', () => {
+    isStandardMode = standardModeSwitch.checked;
+    startNewGame(); // Recommence une partie dans le mode sélectionné
+});
 
 // Fonction de démarrage d'une nouvelle partie complète (nouvelle cible et nouveaux nombres)
 function startNewGame() {
-    cible = getRandomInt(10, 50);
-    nombres = generateNumbers();
+    if (isStandardMode) {
+        cible = generateTargetForStandardMode();
+        nombres = generateNumbersForStandardMode();
+    } else {
+        cible = getRandomInt(10, 50);
+        nombres = generateNumbers();
+    }
     initialNombres = [...nombres];
     selectedNumbers = [];
     selectedOperator = "";
@@ -56,7 +69,7 @@ function startNewGame() {
     updateSolutions();
 }
 
-// Fonction de démarrage pour un nouvel élève (même cible, mêmes solutions, nouveaux nombres)
+// Fonction pour démarrer pour un nouvel élève (mode "Free")
 function nextStudent() {
     nombres = [...initialNombres];
     selectedNumbers = [];
@@ -70,7 +83,7 @@ function nextStudent() {
     // Les solutions restent affichées
 }
 
-// Fonction pour générer un ensemble de 5 nombres aléatoires
+// Fonction pour générer un ensemble de 5 nombres aléatoires (mode "Free")
 function generateNumbers() {
     return [
         getRandomInt(1, 4),
@@ -79,6 +92,97 @@ function generateNumbers() {
         getRandomInt(1, 12),
         getRandomInt(1, 20)
     ];
+}
+
+// Fonction pour générer des nombres dans le mode "Standard"
+function generateNumbersForStandardMode() {
+    let numbers, target;
+    do {
+        numbers = [
+            getRandomInt(2, 10),
+            getRandomInt(2, 15),
+            getRandomInt(2, 20),
+            getRandomInt(2, 25),
+            getRandomInt(2, 30)
+        ];
+        target = calculateStandardTarget(numbers);
+    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
+    return numbers;
+}
+
+// Fonction pour calculer une cible qui utilise les 4 opérateurs une fois
+function calculateStandardTarget(numbers) {
+    const permutations = getPermutations(numbers);
+    for (const perm of permutations) {
+        const [a, b, c, d, e] = perm;
+
+        // Liste des opérateurs à utiliser une fois chacun
+        const operators = ["+", "-", "*", "/"];
+
+        // Générer toutes les combinaisons possibles d'opérateurs
+        const operatorPermutations = getPermutations(operators);
+
+        for (const ops of operatorPermutations) {
+            let currentNumbers = [...perm];
+            let currentOperators = [...ops];
+            let operations = [];
+            let valid = true;
+
+            try {
+                for (let i = 0; i < currentOperators.length; i++) {
+                    const op = currentOperators[i];
+                    let result;
+
+                    if (op === "+") {
+                        result = currentNumbers[0] + currentNumbers[1];
+                    } else if (op === "-") {
+                        result = currentNumbers[0] - currentNumbers[1];
+                        if (result < 0) throw new Error("Résultat négatif");
+                    } else if (op === "*") {
+                        result = currentNumbers[0] * currentNumbers[1];
+                    } else if (op === "/") {
+                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
+                            throw new Error("Division non entière ou par zéro");
+                        }
+                        result = currentNumbers[0] / currentNumbers[1];
+                    }
+
+                    if (!Number.isInteger(result) || result < 0) {
+                        throw new Error("Résultat non valide");
+                    }
+
+                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
+                    // Remplacer les deux premiers nombres par le résultat
+                    currentNumbers = [result, ...currentNumbers.slice(2)];
+                }
+
+                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
+                if (currentNumbers[0] > 0) {
+                    // Retourner le dernier résultat comme cible
+                    return currentNumbers[0];
+                }
+            } catch (e) {
+                // Si une opération échoue, continuer avec la prochaine combinaison
+                continue;
+            }
+        }
+    }
+    return null; // Si aucune solution trouvée, retourner null
+}
+
+// Génération de permutations pour tester différentes combinaisons
+function getPermutations(array) {
+    if (array.length <= 1) return [array];
+    let result = [];
+    for (let i = 0; i < array.length; i++) {
+        const current = array[i];
+        const remaining = array.slice(0, i).concat(array.slice(i + 1));
+        const remainingPerms = getPermutations(remaining);
+        for (const perm of remainingPerms) {
+            result.push([current].concat(perm));
+        }
+    }
+    return result;
 }
 
 // Fonction pour générer un entier aléatoire entre min et max
@@ -211,6 +315,12 @@ calculateButton.addEventListener('click', () => {
             return;
         }
 
+        // En mode "Standard", vérifier que les opérateurs ne sont utilisés qu'une fois
+        if (isStandardMode && usedOperators.has(selectedOperator)) {
+            alert("En mode Standard, chaque opérateur ne peut être utilisé qu'une seule fois.");
+            return;
+        }
+
         usedOperators.add(selectedOperator);
 
         const operationString = `${nombre1} ${selectedOperator} ${nombre2} = ${resultatOperation}`;
@@ -233,6 +343,11 @@ calculateButton.addEventListener('click', () => {
             solutions.push({ operation: operationsHistory.join(' ; '), score: totalScore });
             updateSolutions();
             alert(`Félicitations ! Vous avez atteint la cible ${cible} avec un score de ${totalScore} points.`);
+        } else {
+            // Vérifier si toutes les combinaisons possibles sont épuisées sans atteindre la cible
+            if (isStandardMode && operationsHistory.length === 4 && !nombres.includes(cible)) {
+                alert("Mode Standard terminé sans atteindre la cible. Essayez une nouvelle partie.");
+            }
         }
     } else {
         alert("Veuillez sélectionner deux nombres et un opérateur pour effectuer un calcul.");
@@ -371,7 +486,7 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                     const func = operationsFunctions[op];
                     let result = func(a, b);
 
-                    if (result === null || !isFinite(result) || !Number.isInteger(result)) continue;
+                    if (result === null || !isFinite(result) || !Number.isInteger(result) || result < 0) continue;
 
                     const newOperations = [...operations, `${a} ${op} ${b} = ${result}`];
                     const newNumbers = [result, ...remaining];
@@ -413,7 +528,7 @@ function calculateOperationsScore(operations, usedOps) {
     });
 
     if (usedOps.size === 4) {
-        score += 10; // Bonus de 10 points
+        score += 10; // Bonus de 10 points pour utilisation de tous les opérateurs
     }
 
     return score;
@@ -421,6 +536,7 @@ function calculateOperationsScore(operations, usedOps) {
 
 // Initialiser le jeu avec une nouvelle partie
 startNewGame();
+
 // Variables pour le chronomètre
 let timerInterval;
 let timerDuration = 4 * 60; // 4 minutes en secondes
@@ -451,32 +567,26 @@ function updateTimerDisplay() {
     const minutes = Math.floor(currentTime / 60);
     const seconds = currentTime % 60;
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    // Changer la couleur lorsque le temps est presque écoulé (moins de 1 minute)
+    if (currentTime <= 60) {
+        timerDisplay.classList.add('low-time');
+    } else {
+        timerDisplay.classList.remove('low-time');
+    }
 }
 
 // Ajoute un événement pour le bouton de démarrage du chronomètre
 startTimerButton.addEventListener('click', startTimer);
-// Variable pour suivre l'état d'affichage des solutions
-let solutionsVisible = true;
 
-// Mettre à jour la fonction "findBestSolutions"
-function findBestSolutions() {
-    // Bascule l'affichage des solutions
-    solutionsVisible = !solutionsVisible;
-    const solutionsContainer = document.querySelector('.solutions-container');
-
-    if (solutionsVisible) {
-        const bestSolutions = getAllSolutions();
-        if (bestSolutions.length > 0) {
-            // Affiche les meilleures solutions dans les solutions proposées
-            solutions = solutions.concat(bestSolutions);
-            updateSolutions();
-            solutionsContainer.style.display = 'block'; // Affiche les solutions
-            alert(`Voici les solutions avec le score maximum de ${bestSolutions[0].score} points.`);
-        } else {
-            alert("Aucune solution trouvée pour atteindre la cible.");
-        }
-    } else {
-        // Cache les solutions
-        solutionsContainer.style.display = 'none';
+// Styles additionnels pour le chronomètre en mode faible temps
+const style = document.createElement('style');
+style.innerHTML = `
+    .timer.low-time {
+        background-color: #ff6f61; /* Rouge clair pour signaler l'urgence */
+        color: #fff;
+        border-color: #f44336;
+        transition: background-color 0.5s, color 0.5s, border-color 0.5s;
     }
-}
+`;
+document.head.appendChild(style);
