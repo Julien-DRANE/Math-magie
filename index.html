@@ -1,90 +1,103 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- Balises méta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONJUGAFOND</title>
+    <meta name="description" content="Jeu de mathématiques basé sur les opérations arithmétiques.">
+    <title>Mathémagie</title>
+    <!-- Lien vers le fichier CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1 class="logo">CONJUGAFOND</h1>
-        <span id="turbo-indicator" class="turbo-indicator" style="display: none;">🚀 TURBO MODE</span> <!-- Indicateur TURBO -->
-        <p class="instruction">Conjugue 5 verbes correctement pour atteindre le score maximum ! Attention aux pièges !</p>
-        <div class="score-grid">
-            <p>Présent: 1pt | Futur: 2pts | Passé: 3pts | Imparfait: 4pts</p>
-            <div id="turbo-x2" class="turbo-x2" style="display: none;">x2</div> <!-- Symbole x2 pour mode TURBO -->
-        </div>
-    </header>
-
     <div class="container">
+        <!-- En-tête du jeu -->
+        <header>
+            <h1 class="logo">Mathémagie</h1>
+            <!-- Grille des points réduite -->
+            <div class="score-grid">
+                <p><strong>Points :</strong> + (1pt), − (2pts), × (3pts), ÷ (5pts), Bonus 4 opérateurs (10pts)</p>
+            </div>
+        </header>
+        
+        <!-- Zone de jeu principale -->
         <div class="game-area">
-            <!-- Panneau de gauche -->
+            <!-- Panneau de gauche : Boutons de contrôle -->
             <div class="left-panel">
                 <div class="game-controls">
-                    <!-- Section des Modes -->
-                    <label for="niveau">Mode :</label>
-                    <button id="modeAleatoire" class="active">Mode Aléatoire (Actif)</button>
-
-                    <!-- Section de Sélection de Groupe -->
-                    <label for="niveau">Choisir le groupe de verbes :</label>
-                    <button id="premierGroupe">1er Groupe</button>
-                    <button id="deuxiemeGroupe">2ème Groupe</button>
-                    <button id="troisiemeGroupe">3ème Groupe</button>
-
-                    <!-- Bouton TURBO déplacé ici -->
-                    <button id="modeTurbo">Mode TURBO (Inactif)</button>
+                    <button id="new-game-button" aria-label="Commencer une nouvelle partie">Nouvelle Partie</button>
+                    <button id="next-student-button" aria-label="Passer à l'élève suivant">Élève Suivant</button>
+                    <button id="undo-button" aria-label="Annuler la dernière action">Retour en Arrière</button>
+                    <!-- Bouton "Magique" -->
+                    <button id="magic-button" aria-label="Activer la magie">Magique</button>
+                    <button id="start-timer-button" aria-label="Démarrer le chronomètre">Démarrer Chrono</button>
+                    <div id="timer-display" class="timer">04:00</div>
                 </div>
             </div>
-
-            <!-- Panneau central -->
+            
+            <!-- Panneau central : Cible, Nombres, Opérations, Calcul -->
             <div class="center-panel">
+                <!-- Zone d'affichage de la cible -->
                 <div class="target">
-                    <h2 id="verbe-container">Verbe : </h2>
-                    <div id="temps-container">Temps : </div>
+                    <h2>Cible</h2>
+                    <div id="cible" class="target-value">0</div>
                 </div>
-
-                <div id="phrase-container" class="phrase">
-                    <!-- La phrase à compléter s'affichera ici -->
-                </div>
-
-                <input type="text" id="reponse" placeholder="Entrez le verbe conjugué">
-                <button id="verifier">Valider</button>
                 
-                <!-- Bouton Solution -->
-                <button id="bouton-solution">
-                    Solution
-                </button>
-
-                <!-- Bulle de solution -->
-                <div id="solution-bulle" class="solution-bulle" style="display: none;">
-                    <span id="solution-text"></span>
+                <!-- Zone de sélection des nombres -->
+                <div class="numbers-container">
+                    <div class="hex-number" id="number1">0</div>
+                    <div class="hex-number" id="number2">0</div>
+                    <div class="hex-number" id="number3">0</div>
+                    <div class="hex-number" id="number4">0</div>
+                    <div class="hex-number" id="number5">0</div>
                 </div>
-
-
-                <div class="score-container">
-                    Score : <span id="score">0</span>
+                
+                <!-- Zone de sélection des opérations -->
+                <div class="operations">
+                    <button class="op-button" data-op="+" aria-label="Additionner">+</button>
+                    <button class="op-button" data-op="-" aria-label="Soustraire">−</button>
+                    <button class="op-button" data-op="*" aria-label="Multiplier">×</button>
+                    <button class="op-button" data-op="/" aria-label="Diviser">÷</button>
                 </div>
-
-                <!-- Section pour afficher le score final -->
-                <div id="final-score" class="final-score" style="display:none;">
-                    Votre score final est : <span id="final-score-value">0</span>
+                
+                <!-- Zone d'affichage des nombres sélectionnés -->
+                <div class="selection-display">
+                    <span id="selected-num1" class="selected-num">?</span>
+                    <span id="selected-op" class="selected-op">?</span>
+                    <span id="selected-num2" class="selected-num">?</span>
                 </div>
+                
+                <!-- Bouton pour effectuer le calcul -->
+                <button id="calculate-button" class="calculate-button">Calculer</button>
             </div>
-
-            <!-- Panneau de droite -->
+            
+            <!-- Panneau de droite : Historique et Solutions -->
             <div class="right-panel">
-                <h3>Historique</h3>
-                <div id="historique-container">
-                    <ul id="historique"></ul>
+                <!-- Historique des opérations -->
+                <div class="history-container">
+                    <h3>Historique des opérations</h3>
+                    <div id="history" class="history"></div>
                 </div>
-                <!-- Bouton "Nouvelle Partie" dans le panneau de droite -->
-                <button id="nouvelle-partie">Nouvelle Partie</button>
+                
+                <!-- Solutions proposées -->
+                <div class="solutions-container">
+                    <h3>Solutions proposées</h3>
+                    <table id="solutions-table">
+                        <thead>
+                            <tr>
+                                <th>Opération</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solutions-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Inclusion du script JavaScript -->
+    <!-- Fichier JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
