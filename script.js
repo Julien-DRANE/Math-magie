@@ -121,7 +121,6 @@ function calculateStandardTarget(numbers) {
 
         // Générer toutes les combinaisons possibles d'opérateurs
         const operatorPermutations = getPermutations(operators);
-
         for (const ops of operatorPermutations) {
             let currentNumbers = [...perm];
             let currentOperators = [...ops];
@@ -157,10 +156,12 @@ function calculateStandardTarget(numbers) {
                 }
 
                 // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
-                if (currentNumbers[0] > 0) {
-                    // Retourner le dernier résultat comme cible
+                if (currentNumbers[0] === a + b - c * d / e) { // Ceci est un exemple, adapte selon tes besoins
                     return currentNumbers[0];
                 }
+
+                // Retourner le dernier résultat comme cible
+                return currentNumbers[0];
             } catch (e) {
                 // Si une opération échoue, continuer avec la prochaine combinaison
                 continue;
@@ -379,6 +380,7 @@ function updateHistory() {
         const div = document.createElement('div');
         div.textContent = operation;
         div.classList.add('operation-entry');
+        div.setAttribute('role', 'listitem');
         historyElement.appendChild(div);
     });
 }
@@ -539,7 +541,7 @@ startNewGame();
 
 // Variables pour le chronomètre
 let timerInterval;
-let timerDuration = 4 * 60; // 4 minutes en secondes
+const timerDuration = 4 * 60; // 4 minutes en secondes
 let currentTime = timerDuration;
 
 // Sélection des éléments du DOM pour le chronomètre
@@ -578,15 +580,3 @@ function updateTimerDisplay() {
 
 // Ajoute un événement pour le bouton de démarrage du chronomètre
 startTimerButton.addEventListener('click', startTimer);
-
-// Styles additionnels pour le chronomètre en mode faible temps
-const style = document.createElement('style');
-style.innerHTML = `
-    .timer.low-time {
-        background-color: #ff6f61; /* Rouge clair pour signaler l'urgence */
-        color: #fff;
-        border-color: #f44336;
-        transition: background-color 0.5s, color 0.5s, border-color 0.5s;
-    }
-`;
-document.head.appendChild(style);
