@@ -368,4 +368,10 @@ h1.logo {
     .selection-display {
         width: 90%; /* Ajustement de la largeur de la sélection affichée */
     }
+
+    /* Ajustement pour le chronomètre sur mobile */
+    .timer {
+        font-size: 20px;
+        padding: 10px;
+    }
 }
