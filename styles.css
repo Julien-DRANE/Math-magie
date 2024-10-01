@@ -45,7 +45,7 @@ h1.logo {
 .game-area {
     display: flex;
     padding: 20px;
-    flex-wrap: wrap; /* Permet aux panneaux de se réorganiser */
+    flex-wrap: wrap;
 }
 
 /* Panneau de gauche */
@@ -58,14 +58,6 @@ h1.logo {
 
 .mode-switch {
     margin-top: 20px;
-    display: flex;
-    align-items: center;
-}
-
-.mode-switch label {
-    margin-right: 10px;
-    font-size: 16px;
-    color: #333;
 }
 
 .game-controls {
@@ -99,6 +91,25 @@ h1.logo {
 
 #magic-button:hover {
     background-color: #ab47bc;
+}
+
+/* Style spécifique pour le bouton "Difficile" */
+#hard-mode-button {
+    background-color: #e57373; /* Rouge pour indiquer une difficulté accrue */
+}
+
+#hard-mode-button:hover {
+    background-color: #ef5350;
+}
+
+/* Style spécifique pour le bouton "Expert" */
+#expert-mode-button {
+    background-color: #64b5f6; /* Bleu pour indiquer une difficulté très accrue */
+    color: #fff;
+}
+
+#expert-mode-button:hover {
+    background-color: #42a5f5;
 }
 
 /* Panneau central */
@@ -152,7 +163,7 @@ h1.logo {
     cursor: pointer;
     margin: 10px;
     color: #333;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s ease;
 }
 
 .hex-number:hover {
@@ -160,13 +171,10 @@ h1.logo {
     transform: scale(1.1);
 }
 
-.hex-number.selected:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
 .selected {
     background-color: #ffab91;
     border: 2px solid #f57f17;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Opérations */
@@ -187,7 +195,7 @@ h1.logo {
     cursor: pointer;
     margin: 10px;
     color: #333;
-    transition: transform 0.3s, background-color 0.3s;
+    transition: transform 0.3s, background-color 0.3s ease;
 }
 
 .op-button:hover {
@@ -304,12 +312,10 @@ h1.logo {
     transition: background-color 0.5s, color 0.5s, border-color 0.5s;
 }
 
-/* Styles additionnels pour le chronomètre en mode faible temps */
 .timer.low-time {
     background-color: #ff6f61; /* Rouge clair pour signaler l'urgence */
     color: #fff;
     border-color: #f44336;
-    transition: background-color 0.5s, color 0.5s, border-color 0.5s;
 }
 
 /* Styles Responsives */
