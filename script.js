@@ -25,6 +25,8 @@ let solutions = [];
 let historyStack = [];
 let usedOperators = new Set();
 let isStandardMode = false; // Nouveau mode standard
+let isHardMode = false;     // Nouveau mode difficile
+let isExpertMode = false;   // Nouveau mode expert
 
 // Initialisation des éléments DOM
 const cibleElement = document.getElementById('cible');
@@ -40,16 +42,62 @@ const magicButton = document.getElementById('magic-button');
 const historyElement = document.getElementById('history');
 const solutionsBody = document.getElementById('solutions-body');
 const standardModeSwitch = document.getElementById('standard-mode-switch');
+const hardModeButton = document.getElementById('hard-mode-button');
+const expertModeButton = document.getElementById('expert-mode-button');
 
 // Écouteur pour activer le mode "Standard"
 standardModeSwitch.addEventListener('change', () => {
     isStandardMode = standardModeSwitch.checked;
+    if (isStandardMode) {
+        isHardMode = false;
+        isExpertMode = false;
+        hardModeButton.classList.remove('active');
+        expertModeButton.classList.remove('active');
+    }
+    startNewGame(); // Recommence une partie dans le mode sélectionné
+});
+
+// Écouteur pour activer le mode "Difficile"
+hardModeButton.addEventListener('click', () => {
+    if (isHardMode) {
+        isHardMode = false;
+        hardModeButton.classList.remove('active');
+    } else {
+        isHardMode = true;
+        isStandardMode = false;
+        isExpertMode = false;
+        standardModeSwitch.checked = false;
+        expertModeButton.classList.remove('active');
+        hardModeButton.classList.add('active');
+    }
+    startNewGame(); // Recommence une partie dans le mode sélectionné
+});
+
+// Écouteur pour activer le mode "Expert"
+expertModeButton.addEventListener('click', () => {
+    if (isExpertMode) {
+        isExpertMode = false;
+        expertModeButton.classList.remove('active');
+    } else {
+        isExpertMode = true;
+        isStandardMode = false;
+        isHardMode = false;
+        standardModeSwitch.checked = false;
+        hardModeButton.classList.remove('active');
+        expertModeButton.classList.add('active');
+    }
     startNewGame(); // Recommence une partie dans le mode sélectionné
 });
 
 // Fonction de démarrage d'une nouvelle partie complète (nouvelle cible et nouveaux nombres)
 function startNewGame() {
-    if (isStandardMode) {
+    if (isExpertMode) {
+        cible = generateTargetForExpertMode();
+        nombres = generateNumbersForExpertMode();
+    } else if (isHardMode) {
+        cible = generateTargetForHardMode();
+        nombres = generateNumbersForHardMode();
+    } else if (isStandardMode) {
         cible = generateTargetForStandardMode();
         nombres = generateNumbersForStandardMode();
     } else {
@@ -110,7 +158,39 @@ function generateNumbersForStandardMode() {
     return numbers;
 }
 
-// Fonction pour calculer une cible qui utilise les 4 opérateurs une fois
+// Fonction pour générer des nombres dans le mode "Difficile"
+function generateNumbersForHardMode() {
+    let numbers, target;
+    do {
+        numbers = [
+            getRandomInt(5, 20),
+            getRandomInt(5, 25),
+            getRandomInt(10, 30),
+            getRandomInt(10, 35),
+            getRandomInt(15, 40)
+        ];
+        target = calculateHardTarget(numbers);
+    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
+    return numbers;
+}
+
+// Fonction pour générer des nombres dans le mode "Expert"
+function generateNumbersForExpertMode() {
+    let numbers, target;
+    do {
+        numbers = [
+            getRandomInt(20, 50),
+            getRandomInt(25, 60),
+            getRandomInt(30, 70),
+            getRandomInt(35, 80),
+            getRandomInt(40, 90)
+        ];
+        target = calculateExpertTarget(numbers);
+    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
+    return numbers;
+}
+
+// Fonction pour calculer une cible qui utilise les 4 opérateurs une fois (mode "Standard")
 function calculateStandardTarget(numbers) {
     const permutations = getPermutations(numbers);
     for (const perm of permutations) {
@@ -121,6 +201,7 @@ function calculateStandardTarget(numbers) {
 
         // Générer toutes les combinaisons possibles d'opérateurs
         const operatorPermutations = getPermutations(operators);
+
         for (const ops of operatorPermutations) {
             let currentNumbers = [...perm];
             let currentOperators = [...ops];
@@ -156,12 +237,134 @@ function calculateStandardTarget(numbers) {
                 }
 
                 // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
-                if (currentNumbers[0] === a + b - c * d / e) { // Ceci est un exemple, adapte selon tes besoins
+                if (currentNumbers[0] > 0) {
+                    // Retourner le dernier résultat comme cible
                     return currentNumbers[0];
                 }
+            } catch (e) {
+                // Si une opération échoue, continuer avec la prochaine combinaison
+                continue;
+            }
+        }
+    }
+    return null; // Si aucune solution trouvée, retourner null
+}
 
-                // Retourner le dernier résultat comme cible
-                return currentNumbers[0];
+// Fonction pour calculer une cible plus complexe (mode "Difficile")
+function calculateHardTarget(numbers) {
+    // Par exemple, on pourrait exiger l'utilisation de plus d'opérations ou de nombres plus grands
+    // Ici, pour simplifier, on augmente la cible et les opérations
+
+    const permutations = getPermutations(numbers);
+    for (const perm of permutations) {
+        const [a, b, c, d, e] = perm;
+
+        // Liste des opérateurs à utiliser une fois chacun
+        const operators = ["+", "-", "*", "/"];
+
+        // Générer toutes les combinaisons possibles d'opérateurs
+        const operatorPermutations = getPermutations(operators);
+
+        for (const ops of operatorPermutations) {
+            let currentNumbers = [...perm];
+            let currentOperators = [...ops];
+            let operations = [];
+            let valid = true;
+
+            try {
+                for (let i = 0; i < currentOperators.length; i++) {
+                    const op = currentOperators[i];
+                    let result;
+
+                    if (op === "+") {
+                        result = currentNumbers[0] + currentNumbers[1];
+                    } else if (op === "-") {
+                        result = currentNumbers[0] - currentNumbers[1];
+                        if (result < 0) throw new Error("Résultat négatif");
+                    } else if (op === "*") {
+                        result = currentNumbers[0] * currentNumbers[1];
+                    } else if (op === "/") {
+                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
+                            throw new Error("Division non entière ou par zéro");
+                        }
+                        result = currentNumbers[0] / currentNumbers[1];
+                    }
+
+                    if (!Number.isInteger(result) || result < 0) {
+                        throw new Error("Résultat non valide");
+                    }
+
+                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
+                    // Remplacer les deux premiers nombres par le résultat
+                    currentNumbers = [result, ...currentNumbers.slice(2)];
+                }
+
+                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
+                if (currentNumbers[0] > 0 && currentNumbers[0] > 50) { // Exemple de cible plus élevée
+                    return currentNumbers[0];
+                }
+            } catch (e) {
+                // Si une opération échoue, continuer avec la prochaine combinaison
+                continue;
+            }
+        }
+    }
+    return null; // Si aucune solution trouvée, retourner null
+}
+
+// Fonction pour calculer une cible encore plus complexe (mode "Expert")
+function calculateExpertTarget(numbers) {
+    // Ici, on peut imposer des contraintes supplémentaires comme une cible très élevée
+    // ou plus d'opérations
+
+    const permutations = getPermutations(numbers);
+    for (const perm of permutations) {
+        const [a, b, c, d, e] = perm;
+
+        // Liste des opérateurs à utiliser une fois chacun
+        const operators = ["+", "-", "*", "/"];
+
+        // Générer toutes les combinaisons possibles d'opérateurs
+        const operatorPermutations = getPermutations(operators);
+
+        for (const ops of operatorPermutations) {
+            let currentNumbers = [...perm];
+            let currentOperators = [...ops];
+            let operations = [];
+            let valid = true;
+
+            try {
+                for (let i = 0; i < currentOperators.length; i++) {
+                    const op = currentOperators[i];
+                    let result;
+
+                    if (op === "+") {
+                        result = currentNumbers[0] + currentNumbers[1];
+                    } else if (op === "-") {
+                        result = currentNumbers[0] - currentNumbers[1];
+                        if (result < 0) throw new Error("Résultat négatif");
+                    } else if (op === "*") {
+                        result = currentNumbers[0] * currentNumbers[1];
+                    } else if (op === "/") {
+                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
+                            throw new Error("Division non entière ou par zéro");
+                        }
+                        result = currentNumbers[0] / currentNumbers[1];
+                    }
+
+                    if (!Number.isInteger(result) || result < 0) {
+                        throw new Error("Résultat non valide");
+                    }
+
+                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
+                    // Remplacer les deux premiers nombres par le résultat
+                    currentNumbers = [result, ...currentNumbers.slice(2)];
+                }
+
+                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
+                if (currentNumbers[0] > 100) { // Exemple de cible très élevée pour le mode Expert
+                    return currentNumbers[0];
+                }
             } catch (e) {
                 // Si une opération échoue, continuer avec la prochaine combinaison
                 continue;
@@ -311,14 +514,26 @@ calculateButton.addEventListener('click', () => {
             return;
         }
 
-        if (!Number.isInteger(resultatOperation)) {
-            alert("Le résultat n'est pas un nombre entier.");
+        if (!Number.isInteger(resultatOperation) || resultatOperation < 0) {
+            alert("Le résultat n'est pas un nombre entier positif.");
             return;
         }
 
         // En mode "Standard", vérifier que les opérateurs ne sont utilisés qu'une fois
         if (isStandardMode && usedOperators.has(selectedOperator)) {
             alert("En mode Standard, chaque opérateur ne peut être utilisé qu'une seule fois.");
+            return;
+        }
+
+        // En mode "Difficile", vérifier que les opérateurs ne sont utilisés qu'une fois
+        if (isHardMode && usedOperators.has(selectedOperator)) {
+            alert("En mode Difficile, chaque opérateur ne peut être utilisé qu'une seule fois.");
+            return;
+        }
+
+        // En mode "Expert", vérifier que les opérateurs ne sont utilisés qu'une fois
+        if (isExpertMode && usedOperators.has(selectedOperator)) {
+            alert("En mode Expert, chaque opérateur ne peut être utilisé qu'une seule fois.");
             return;
         }
 
@@ -346,8 +561,8 @@ calculateButton.addEventListener('click', () => {
             alert(`Félicitations ! Vous avez atteint la cible ${cible} avec un score de ${totalScore} points.`);
         } else {
             // Vérifier si toutes les combinaisons possibles sont épuisées sans atteindre la cible
-            if (isStandardMode && operationsHistory.length === 4 && !nombres.includes(cible)) {
-                alert("Mode Standard terminé sans atteindre la cible. Essayez une nouvelle partie.");
+            if ((isStandardMode || isHardMode || isExpertMode) && operationsHistory.length >= 4 && !nombres.includes(cible)) {
+                alert("Mode Standard/Difficile/Expert terminé sans atteindre la cible. Essayez une nouvelle partie.");
             }
         }
     } else {
@@ -409,6 +624,20 @@ function undoState() {
         selectedOperator = previousState.selectedOperator;
         operationsHistory = [...previousState.operationsHistory];
         usedOperators = new Set(previousState.usedOperators);
+
+        // Réactiver les boutons de mode si nécessaire
+        if (isStandardMode && !previousState.isStandardMode) {
+            standardModeSwitch.checked = false;
+            isStandardMode = false;
+        }
+        if (isHardMode && !previousState.isHardMode) {
+            hardModeButton.classList.remove('active');
+            isHardMode = false;
+        }
+        if (isExpertMode && !previousState.isExpertMode) {
+            expertModeButton.classList.remove('active');
+            isExpertMode = false;
+        }
 
         updateDisplay();
         updateHistory();
@@ -541,7 +770,7 @@ startNewGame();
 
 // Variables pour le chronomètre
 let timerInterval;
-const timerDuration = 4 * 60; // 4 minutes en secondes
+let timerDuration = 4 * 60; // 4 minutes en secondes (par défaut)
 let currentTime = timerDuration;
 
 // Sélection des éléments du DOM pour le chronomètre
@@ -551,7 +780,16 @@ const startTimerButton = document.getElementById('start-timer-button');
 // Fonction pour démarrer le chronomètre
 function startTimer() {
     clearInterval(timerInterval); // Réinitialiser le chronomètre si déjà en cours
-    currentTime = timerDuration; // Réinitialiser le temps à 4 minutes
+
+    if (isExpertMode) {
+        timerDuration = 2 * 60; // 2 minutes en mode Expert
+    } else if (isHardMode) {
+        timerDuration = 3 * 60; // 3 minutes en mode Difficile
+    } else {
+        timerDuration = 4 * 60; // 4 minutes en mode Standard ou Free
+    }
+
+    currentTime = timerDuration; // Réinitialiser le temps
     updateTimerDisplay();
 
     timerInterval = setInterval(() => {
