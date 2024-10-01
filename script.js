@@ -25,8 +25,8 @@ let solutions = [];
 let historyStack = [];
 let usedOperators = new Set();
 let isStandardMode = false; // Nouveau mode standard
-let isHardMode = false;     // Mode Difficile
-let isExpertMode = false;   // Mode Expert
+let isHardMode = false;     // Nouveau mode difficile
+let isExpertMode = false;   // Nouveau mode expert
 
 // Initialisation des éléments DOM
 const cibleElement = document.getElementById('cible');
@@ -44,15 +44,6 @@ const solutionsBody = document.getElementById('solutions-body');
 const standardModeSwitch = document.getElementById('standard-mode-switch');
 const hardModeButton = document.getElementById('hard-mode-button');
 const expertModeButton = document.getElementById('expert-mode-button');
-
-// Affichage du chronomètre
-const timerDisplay = document.getElementById('timer-display');
-const startTimerButton = document.getElementById('start-timer-button');
-
-// Variables pour le chronomètre
-let timerInterval;
-let timerDuration = 4 * 60; // 4 minutes en secondes
-let currentTime = timerDuration;
 
 // Écouteur pour activer le mode "Standard"
 standardModeSwitch.addEventListener('change', () => {
@@ -153,115 +144,53 @@ function generateNumbers() {
 
 // Fonction pour générer des nombres dans le mode "Standard"
 function generateNumbersForStandardMode() {
-    let numbers, target;
-    do {
-        numbers = [
-            getRandomInt(2, 10),
-            getRandomInt(2, 15),
-            getRandomInt(2, 20),
-            getRandomInt(2, 25),
-            getRandomInt(2, 30)
-        ];
-        target = calculateStandardTarget(numbers);
-    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
-    return numbers;
+    return [
+        getRandomInt(1, 10),
+        getRandomInt(1, 15),
+        getRandomInt(1, 20),
+        getRandomInt(1, 25),
+        getRandomInt(1, 30)
+    ];
 }
 
 // Fonction pour générer des nombres dans le mode "Difficile"
 function generateNumbersForHardMode() {
-    let numbers, target;
-    do {
-        numbers = [
-            getRandomInt(5, 20),
-            getRandomInt(5, 25),
-            getRandomInt(10, 30),
-            getRandomInt(10, 35),
-            getRandomInt(15, 40)
-        ];
-        target = calculateHardTarget(numbers);
-    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
-    return numbers;
+    return [
+        getRandomInt(5, 20),
+        getRandomInt(5, 25),
+        getRandomInt(10, 30),
+        getRandomInt(10, 35),
+        getRandomInt(15, 40)
+    ];
 }
 
 // Fonction pour générer des nombres dans le mode "Expert"
 function generateNumbersForExpertMode() {
-    let numbers, target;
-    do {
-        numbers = [
-            getRandomInt(20, 50),
-            getRandomInt(25, 60),
-            getRandomInt(30, 70),
-            getRandomInt(35, 80),
-            getRandomInt(40, 90)
-        ];
-        target = calculateExpertTarget(numbers);
-    } while (target === null); // Continue tant qu'une cible satisfaisant les contraintes n'est pas trouvée
-    return numbers;
+    return [
+        getRandomInt(20, 50),
+        getRandomInt(25, 60),
+        getRandomInt(30, 70),
+        getRandomInt(35, 80),
+        getRandomInt(40, 90)
+    ];
 }
 
-// Fonction pour calculer une cible qui utilise les opérateurs sans restriction (mode "Standard")
-function calculateStandardTarget(numbers) {
-    const targetCandidates = getAllPossibleResults(numbers);
-    // Sélectionner un target parmi les résultats possibles
-    if (targetCandidates.length > 0) {
-        return targetCandidates[Math.floor(Math.random() * targetCandidates.length)];
-    }
-    return null;
+// Fonction pour calculer une cible qui utilise les 4 opérateurs (mode "Standard")
+function generateTargetForStandardMode() {
+    const maxScore = getRandomInt(40, 80); // Exiger une cible entre 40 et 80
+    return maxScore;
 }
 
 // Fonction pour calculer une cible plus complexe (mode "Difficile")
-function calculateHardTarget(numbers) {
-    const targetCandidates = getAllPossibleResults(numbers);
-    // Filtrer pour des cibles plus élevées
-    const filtered = targetCandidates.filter(num => num > 50);
-    if (filtered.length > 0) {
-        return filtered[Math.floor(Math.random() * filtered.length)];
-    }
-    return null;
+function generateTargetForHardMode() {
+    const maxScore = getRandomInt(50, 100); // Exiger une cible entre 50 et 100
+    return maxScore;
 }
 
 // Fonction pour calculer une cible encore plus complexe (mode "Expert")
-function calculateExpertTarget(numbers) {
-    const targetCandidates = getAllPossibleResults(numbers);
-    // Filtrer pour des cibles très élevées
-    const filtered = targetCandidates.filter(num => num > 100);
-    if (filtered.length > 0) {
-        return filtered[Math.floor(Math.random() * filtered.length)];
-    }
-    return null;
-}
-
-// Fonction pour générer toutes les combinaisons possibles et leurs résultats
-function getAllPossibleResults(numbers) {
-    const results = new Set();
-
-    function recurse(currentNumbers) {
-        if (currentNumbers.length === 1) {
-            results.add(currentNumbers[0]);
-            return;
-        }
-
-        for (let i = 0; i < currentNumbers.length; i++) {
-            for (let j = 0; j < currentNumbers.length; j++) {
-                if (i !== j) {
-                    const a = currentNumbers[i];
-                    const b = currentNumbers[j];
-                    const remaining = currentNumbers.filter((_, idx) => idx !== i && idx !== j);
-
-                    for (const op in operations) {
-                        const func = operations[op];
-                        const result = func(a, b);
-                        if (result !== null && result >= 0) { // Pas de valeurs négatives
-                            recurse([result, ...remaining]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    recurse(numbers);
-    return Array.from(results);
+function generateTargetForExpertMode() {
+    const maxScore = getRandomInt(100, 150); // Exiger une cible entre 100 et 150
+    return maxScore;
 }
 
 // Génération de permutations pour tester différentes combinaisons
@@ -291,10 +220,7 @@ function saveState() {
         selectedNumbers: [...selectedNumbers],
         selectedOperator,
         operationsHistory: [...operationsHistory],
-        usedOperators: new Set(usedOperators),
-        isStandardMode,
-        isHardMode,
-        isExpertMode
+        usedOperators: new Set(usedOperators)
     };
     historyStack.push(state);
 }
@@ -371,12 +297,7 @@ const opButtons = Array.from(document.getElementsByClassName('op-button'));
 opButtons.forEach(button => {
     button.addEventListener('click', () => {
         const op = button.getAttribute('data-op');
-        if (selectedOperator === op) {
-            // Si l'opérateur est déjà sélectionné, on le désélectionne
-            selectedOperator = "";
-        } else {
-            selectedOperator = op;
-        }
+        selectedOperator = (selectedOperator === op) ? "" : op;
         updateDisplay();
     });
 });
@@ -408,22 +329,11 @@ calculateButton.addEventListener('click', () => {
         }
 
         if (!Number.isInteger(resultatOperation) || resultatOperation < 0) {
-            alert("Le résultat n'est pas un nombre entier positif.");
+            alert("Le résultat doit être un nombre entier positif.");
             return;
         }
 
-        // En mode "Standard", les opérateurs peuvent être utilisés plusieurs fois
-        // En mode "Difficile" et "Expert", chaque opérateur ne peut être utilisé qu'une seule fois
-        if ((isHardMode || isExpertMode) && usedOperators.has(selectedOperator)) {
-            alert("En mode Difficile/Expert, chaque opérateur ne peut être utilisé qu'une seule fois.");
-            return;
-        }
-
-        // Ajoute l'opérateur utilisé
-        if (isHardMode || isExpertMode) {
-            usedOperators.add(selectedOperator);
-        }
-
+        // En mode "Standard", nous ne vérifions pas l'utilisation des opérateurs
         const operationString = `${nombre1} ${selectedOperator} ${nombre2} = ${resultatOperation}`;
         operationsHistory.push(operationString);
 
@@ -444,11 +354,6 @@ calculateButton.addEventListener('click', () => {
             solutions.push({ operation: operationsHistory.join(' ; '), score: totalScore });
             updateSolutions();
             alert(`Félicitations ! Vous avez atteint la cible ${cible} avec un score de ${totalScore} points.`);
-        } else {
-            // Vérifier si toutes les combinaisons possibles sont épuisées sans atteindre la cible
-            if ((isStandardMode || isHardMode || isExpertMode) && operationsHistory.length >= nombres.length - 1 && !nombres.includes(cible)) {
-                alert("Partie terminée sans atteindre la cible. Essayez une nouvelle partie.");
-            }
         }
     } else {
         alert("Veuillez sélectionner deux nombres et un opérateur pour effectuer un calcul.");
@@ -465,10 +370,6 @@ function calculateScore() {
             score += operatorPoints[op] || 0;
         }
     });
-
-    if (usedOperators.size === 4) {
-        score += 10; // Bonus de 10 points
-    }
 
     return score;
 }
@@ -509,26 +410,6 @@ function undoState() {
         selectedOperator = previousState.selectedOperator;
         operationsHistory = [...previousState.operationsHistory];
         usedOperators = new Set(previousState.usedOperators);
-        isStandardMode = previousState.isStandardMode;
-        isHardMode = previousState.isHardMode;
-        isExpertMode = previousState.isExpertMode;
-
-        // Réactiver les boutons de mode si nécessaire
-        if (isStandardMode) {
-            standardModeSwitch.checked = true;
-            hardModeButton.classList.remove('active');
-            expertModeButton.classList.remove('active');
-        }
-        if (isHardMode) {
-            standardModeSwitch.checked = false;
-            hardModeButton.classList.add('active');
-            expertModeButton.classList.remove('active');
-        }
-        if (isExpertMode) {
-            standardModeSwitch.checked = false;
-            hardModeButton.classList.remove('active');
-            expertModeButton.classList.add('active');
-        }
 
         updateDisplay();
         updateHistory();
@@ -604,8 +485,8 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                 const b = numbers[j];
                 const remaining = numbers.filter((_, idx) => idx !== i && idx !== j);
 
-                for (const op in operations) {
-                    const func = operations[op];
+                for (const op in operationsFunctions) {
+                    const func = operationsFunctions[op];
                     let result = func(a, b);
 
                     if (result === null || !isFinite(result) || !Number.isInteger(result) || result < 0) continue;
@@ -614,10 +495,7 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                     const newNumbers = [result, ...remaining];
 
                     const newUsedOps = new Set(usedOps);
-                    // En mode Standard, les opérateurs peuvent être réutilisés
-                    if (isHardMode || isExpertMode) {
-                        newUsedOps.add(op);
-                    }
+                    newUsedOps.add(op);
                     const score = calculateOperationsScore(newOperations, newUsedOps);
 
                     if (score + (remaining.length * 5) >= maxScore.value) {
@@ -652,54 +530,8 @@ function calculateOperationsScore(operations, usedOps) {
         }
     });
 
-    if (usedOps.size === 4) {
-        score += 10; // Bonus de 10 points pour utilisation de tous les opérateurs
-    }
-
     return score;
 }
 
 // Initialiser le jeu avec une nouvelle partie
 startNewGame();
-
-// Fonction pour démarrer le chronomètre
-function startTimer() {
-    clearInterval(timerInterval); // Réinitialiser le chronomètre si déjà en cours
-
-    if (isExpertMode) {
-        timerDuration = 2 * 60; // 2 minutes en mode Expert
-    } else if (isHardMode) {
-        timerDuration = 3 * 60; // 3 minutes en mode Difficile
-    } else {
-        timerDuration = 4 * 60; // 4 minutes en mode Standard ou Free
-    }
-
-    currentTime = timerDuration; // Réinitialiser le temps
-    updateTimerDisplay();
-
-    timerInterval = setInterval(() => {
-        currentTime--;
-        updateTimerDisplay();
-        if (currentTime <= 0) {
-            clearInterval(timerInterval);
-            alert("Le temps est écoulé !");
-        }
-    }, 1000); // Décrémente chaque seconde
-}
-
-// Fonction pour mettre à jour l'affichage du chronomètre
-function updateTimerDisplay() {
-    const minutes = Math.floor(currentTime / 60);
-    const seconds = currentTime % 60;
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-    // Changer la couleur lorsque le temps est presque écoulé (moins de 1 minute)
-    if (currentTime <= 60) {
-        timerDisplay.classList.add('low-time');
-    } else {
-        timerDisplay.classList.remove('low-time');
-    }
-}
-
-// Ajoute un événement pour le bouton de démarrage du chronomètre
-startTimerButton.addEventListener('click', startTimer);
