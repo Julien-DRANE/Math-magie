@@ -45,7 +45,7 @@ h1.logo {
 .game-area {
     display: flex;
     padding: 20px;
-    flex-wrap: wrap; /* Permet aux panneaux de se réorganiser */
+    flex-wrap: wrap;
 }
 
 /* Panneau de gauche */
@@ -54,6 +54,10 @@ h1.logo {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.mode-switch {
+    margin-top: 20px;
 }
 
 .game-controls {
@@ -286,51 +290,51 @@ h1.logo {
 /* Styles Responsives */
 @media (max-width: 768px) {
     .left-panel, .right-panel {
-        width: 100%; /* Les panneaux prennent toute la largeur sur les petits écrans */
+        width: 100%;
     }
     
     .center-panel {
-        width: 100%; /* Le panneau central prend toute la largeur sur mobile */
+        width: 100%;
     }
     
     .game-area {
-        flex-direction: column; /* Empile les panneaux verticalement sur mobile */
-        padding: 10px; /* Réduit le padding */
+        flex-direction: column;
+        padding: 10px;
     }
 
     h1.logo {
-        font-size: 28px; /* Réduit la taille de la police du logo */
+        font-size: 28px;
     }
 
     .target-value {
-        font-size: 36px; /* Réduit la taille de la cible sur mobile */
+        font-size: 36px;
     }
 
     .selected-num, .selected-op {
-        font-size: 24px; /* Réduit la taille de la sélection affichée */
+        font-size: 24px;
     }
 
     .calculate-button {
-        width: 100%; /* Bouton calculer prend toute la largeur */
+        width: 100%;
     }
 
     .game-controls button {
-        font-size: 14px; /* Réduit la taille de la police des boutons */
+        font-size: 14px;
     }
 
     .hex-number {
-        width: 60px; /* Ajustement de la largeur des nombres */
-        height: 60px; /* Ajustement de la hauteur des nombres */
-        font-size: 20px; /* Réduit la taille de la police des nombres */
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
     }
 
     .op-button {
-        width: 50px; /* Ajustement de la largeur des boutons d'opération */
-        height: 50px; /* Ajustement de la hauteur des boutons d'opération */
-        font-size: 20px; /* Réduit la taille de la police des boutons d'opération */
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
     }
 
     .selection-display {
-        width: 90%; /* Ajustement de la largeur de la sélection affichée */
+        width: 90%;
     }
 }
