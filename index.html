@@ -36,6 +36,9 @@
                         <label for="standard-mode-switch">Mode Standard :</label>
                         <input type="checkbox" id="standard-mode-switch" aria-label="Activer/Désactiver le mode Standard">
                     </div>
+                    
+                    <!-- Affichage du chronomètre -->
+                    <div id="timer-display" class="timer">04:00</div>
                 </div>
             </div>
             
@@ -80,7 +83,7 @@
                 <!-- Historique des opérations -->
                 <div class="history-container">
                     <h3>Historique des opérations</h3>
-                    <div id="history" class="history"></div>
+                    <div id="history" class="history" role="list"></div>
                 </div>
                 
                 <!-- Solutions proposées -->
