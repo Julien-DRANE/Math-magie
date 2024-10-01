@@ -334,3 +334,10 @@ h1.logo {
         width: 90%; /* Ajustement de la largeur de la sélection affichée */
     }
 }
+#expert-mode-button {
+    background-color: #ff7043;
+}
+
+#expert-mode-button:hover {
+    background-color: #ff5722;
+}
