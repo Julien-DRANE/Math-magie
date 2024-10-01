@@ -24,9 +24,6 @@ let operationsHistory = [];
 let solutions = [];
 let historyStack = [];
 let usedOperators = new Set();
-let isStandardMode = false; // Nouveau mode standard
-let isHardMode = false;     // Nouveau mode difficile
-let isExpertMode = false;   // Nouveau mode expert
 
 // Initialisation des éléments DOM
 const cibleElement = document.getElementById('cible');
@@ -41,69 +38,11 @@ const undoButton = document.getElementById('undo-button');
 const magicButton = document.getElementById('magic-button');
 const historyElement = document.getElementById('history');
 const solutionsBody = document.getElementById('solutions-body');
-const standardModeSwitch = document.getElementById('standard-mode-switch');
-const hardModeButton = document.getElementById('hard-mode-button');
-const expertModeButton = document.getElementById('expert-mode-button');
-
-// Écouteur pour activer le mode "Standard"
-standardModeSwitch.addEventListener('change', () => {
-    isStandardMode = standardModeSwitch.checked;
-    if (isStandardMode) {
-        isHardMode = false;
-        isExpertMode = false;
-        hardModeButton.classList.remove('active');
-        expertModeButton.classList.remove('active');
-    }
-    startNewGame(); // Recommence une partie dans le mode sélectionné
-});
-
-// Écouteur pour activer le mode "Difficile"
-hardModeButton.addEventListener('click', () => {
-    if (isHardMode) {
-        isHardMode = false;
-        hardModeButton.classList.remove('active');
-    } else {
-        isHardMode = true;
-        isStandardMode = false;
-        isExpertMode = false;
-        standardModeSwitch.checked = false;
-        expertModeButton.classList.remove('active');
-        hardModeButton.classList.add('active');
-    }
-    startNewGame(); // Recommence une partie dans le mode sélectionné
-});
-
-// Écouteur pour activer le mode "Expert"
-expertModeButton.addEventListener('click', () => {
-    if (isExpertMode) {
-        isExpertMode = false;
-        expertModeButton.classList.remove('active');
-    } else {
-        isExpertMode = true;
-        isStandardMode = false;
-        isHardMode = false;
-        standardModeSwitch.checked = false;
-        hardModeButton.classList.remove('active');
-        expertModeButton.classList.add('active');
-    }
-    startNewGame(); // Recommence une partie dans le mode sélectionné
-});
 
 // Fonction de démarrage d'une nouvelle partie complète (nouvelle cible et nouveaux nombres)
 function startNewGame() {
-    if (isExpertMode) {
-        cible = generateTargetForExpertMode();
-        nombres = generateNumbersForExpertMode();
-    } else if (isHardMode) {
-        cible = generateTargetForHardMode();
-        nombres = generateNumbersForHardMode();
-    } else if (isStandardMode) {
-        cible = generateTargetForStandardMode();
-        nombres = generateNumbersForStandardMode();
-    } else {
-        cible = getRandomInt(10, 50);
-        nombres = generateNumbers();
-    }
+    cible = getRandomInt(10, 50);
+    nombres = generateNumbers();
     initialNombres = [...nombres];
     selectedNumbers = [];
     selectedOperator = "";
@@ -117,7 +56,7 @@ function startNewGame() {
     updateSolutions();
 }
 
-// Fonction pour démarrer pour un nouvel élève (mode "Free")
+// Fonction de démarrage pour un nouvel élève (même cible, mêmes solutions, nouveaux nombres)
 function nextStudent() {
     nombres = [...initialNombres];
     selectedNumbers = [];
@@ -131,19 +70,8 @@ function nextStudent() {
     // Les solutions restent affichées
 }
 
-// Fonction pour générer un ensemble de 5 nombres aléatoires (mode "Free")
+// Fonction pour générer un ensemble de 5 nombres aléatoires
 function generateNumbers() {
-    return [
-        getRandomInt(1, 4),
-        getRandomInt(1, 6),
-        getRandomInt(1, 8),
-        getRandomInt(1, 12),
-        getRandomInt(1, 20)
-    ];
-}
-
-// Fonction pour générer des nombres dans le mode "Standard"
-function generateNumbersForStandardMode() {
     return [
         getRandomInt(1, 10),
         getRandomInt(1, 15),
@@ -151,61 +79,6 @@ function generateNumbersForStandardMode() {
         getRandomInt(1, 25),
         getRandomInt(1, 30)
     ];
-}
-
-// Fonction pour générer des nombres dans le mode "Difficile"
-function generateNumbersForHardMode() {
-    return [
-        getRandomInt(5, 20),
-        getRandomInt(5, 25),
-        getRandomInt(10, 30),
-        getRandomInt(10, 35),
-        getRandomInt(15, 40)
-    ];
-}
-
-// Fonction pour générer des nombres dans le mode "Expert"
-function generateNumbersForExpertMode() {
-    return [
-        getRandomInt(20, 50),
-        getRandomInt(25, 60),
-        getRandomInt(30, 70),
-        getRandomInt(35, 80),
-        getRandomInt(40, 90)
-    ];
-}
-
-// Fonction pour calculer une cible qui utilise les 4 opérateurs (mode "Standard")
-function generateTargetForStandardMode() {
-    const maxScore = getRandomInt(40, 80); // Exiger une cible entre 40 et 80
-    return maxScore;
-}
-
-// Fonction pour calculer une cible plus complexe (mode "Difficile")
-function generateTargetForHardMode() {
-    const maxScore = getRandomInt(50, 100); // Exiger une cible entre 50 et 100
-    return maxScore;
-}
-
-// Fonction pour calculer une cible encore plus complexe (mode "Expert")
-function generateTargetForExpertMode() {
-    const maxScore = getRandomInt(100, 150); // Exiger une cible entre 100 et 150
-    return maxScore;
-}
-
-// Génération de permutations pour tester différentes combinaisons
-function getPermutations(array) {
-    if (array.length <= 1) return [array];
-    let result = [];
-    for (let i = 0; i < array.length; i++) {
-        const current = array[i];
-        const remaining = array.slice(0, i).concat(array.slice(i + 1));
-        const remainingPerms = getPermutations(remaining);
-        for (const perm of remainingPerms) {
-            result.push([current].concat(perm));
-        }
-    }
-    return result;
 }
 
 // Fonction pour générer un entier aléatoire entre min et max
@@ -297,7 +170,12 @@ const opButtons = Array.from(document.getElementsByClassName('op-button'));
 opButtons.forEach(button => {
     button.addEventListener('click', () => {
         const op = button.getAttribute('data-op');
-        selectedOperator = (selectedOperator === op) ? "" : op;
+        if (selectedOperator === op) {
+            // Si l'opérateur est déjà sélectionné, on le désélectionne
+            selectedOperator = "";
+        } else {
+            selectedOperator = op;
+        }
         updateDisplay();
     });
 });
@@ -328,12 +206,12 @@ calculateButton.addEventListener('click', () => {
             return;
         }
 
-        if (!Number.isInteger(resultatOperation) || resultatOperation < 0) {
-            alert("Le résultat doit être un nombre entier positif.");
+        if (!Number.isInteger(resultatOperation)) {
+            alert("Le résultat n'est pas un nombre entier.");
             return;
         }
 
-        // En mode "Standard", nous ne vérifions pas l'utilisation des opérateurs
+        // En mode Standard, on permet d'utiliser les opérateurs plusieurs fois
         const operationString = `${nombre1} ${selectedOperator} ${nombre2} = ${resultatOperation}`;
         operationsHistory.push(operationString);
 
@@ -371,6 +249,10 @@ function calculateScore() {
         }
     });
 
+    if (usedOperators.size === 4) {
+        score += 10; // Bonus de 10 points
+    }
+
     return score;
 }
 
@@ -381,7 +263,6 @@ function updateHistory() {
         const div = document.createElement('div');
         div.textContent = operation;
         div.classList.add('operation-entry');
-        div.setAttribute('role', 'listitem');
         historyElement.appendChild(div);
     });
 }
@@ -489,7 +370,7 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                     const func = operationsFunctions[op];
                     let result = func(a, b);
 
-                    if (result === null || !isFinite(result) || !Number.isInteger(result) || result < 0) continue;
+                    if (result === null || !isFinite(result) || !Number.isInteger(result)) continue;
 
                     const newOperations = [...operations, `${a} ${op} ${b} = ${result}`];
                     const newNumbers = [result, ...remaining];
@@ -529,6 +410,10 @@ function calculateOperationsScore(operations, usedOps) {
             score += operatorPoints[op] || 0;
         }
     });
+
+    if (usedOps.size === 4) {
+        score += 10; // Bonus de 10 points
+    }
 
     return score;
 }
