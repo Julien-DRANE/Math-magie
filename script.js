@@ -25,8 +25,8 @@ let solutions = [];
 let historyStack = [];
 let usedOperators = new Set();
 let isStandardMode = false; // Nouveau mode standard
-let isHardMode = false;     // Nouveau mode difficile
-let isExpertMode = false;   // Nouveau mode expert
+let isHardMode = false;     // Mode Difficile
+let isExpertMode = false;   // Mode Expert
 
 // Initialisation des éléments DOM
 const cibleElement = document.getElementById('cible');
@@ -44,6 +44,15 @@ const solutionsBody = document.getElementById('solutions-body');
 const standardModeSwitch = document.getElementById('standard-mode-switch');
 const hardModeButton = document.getElementById('hard-mode-button');
 const expertModeButton = document.getElementById('expert-mode-button');
+
+// Affichage du chronomètre
+const timerDisplay = document.getElementById('timer-display');
+const startTimerButton = document.getElementById('start-timer-button');
+
+// Variables pour le chronomètre
+let timerInterval;
+let timerDuration = 4 * 60; // 4 minutes en secondes
+let currentTime = timerDuration;
 
 // Écouteur pour activer le mode "Standard"
 standardModeSwitch.addEventListener('change', () => {
@@ -190,188 +199,69 @@ function generateNumbersForExpertMode() {
     return numbers;
 }
 
-// Fonction pour calculer une cible qui utilise les 4 opérateurs une fois (mode "Standard")
+// Fonction pour calculer une cible qui utilise les opérateurs sans restriction (mode "Standard")
 function calculateStandardTarget(numbers) {
-    const permutations = getPermutations(numbers);
-    for (const perm of permutations) {
-        const [a, b, c, d, e] = perm;
-
-        // Liste des opérateurs à utiliser une fois chacun
-        const operators = ["+", "-", "*", "/"];
-
-        // Générer toutes les combinaisons possibles d'opérateurs
-        const operatorPermutations = getPermutations(operators);
-
-        for (const ops of operatorPermutations) {
-            let currentNumbers = [...perm];
-            let currentOperators = [...ops];
-            let operations = [];
-            let valid = true;
-
-            try {
-                for (let i = 0; i < currentOperators.length; i++) {
-                    const op = currentOperators[i];
-                    let result;
-
-                    if (op === "+") {
-                        result = currentNumbers[0] + currentNumbers[1];
-                    } else if (op === "-") {
-                        result = currentNumbers[0] - currentNumbers[1];
-                        if (result < 0) throw new Error("Résultat négatif");
-                    } else if (op === "*") {
-                        result = currentNumbers[0] * currentNumbers[1];
-                    } else if (op === "/") {
-                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
-                            throw new Error("Division non entière ou par zéro");
-                        }
-                        result = currentNumbers[0] / currentNumbers[1];
-                    }
-
-                    if (!Number.isInteger(result) || result < 0) {
-                        throw new Error("Résultat non valide");
-                    }
-
-                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
-                    // Remplacer les deux premiers nombres par le résultat
-                    currentNumbers = [result, ...currentNumbers.slice(2)];
-                }
-
-                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
-                if (currentNumbers[0] > 0) {
-                    // Retourner le dernier résultat comme cible
-                    return currentNumbers[0];
-                }
-            } catch (e) {
-                // Si une opération échoue, continuer avec la prochaine combinaison
-                continue;
-            }
-        }
+    const targetCandidates = getAllPossibleResults(numbers);
+    // Sélectionner un target parmi les résultats possibles
+    if (targetCandidates.length > 0) {
+        return targetCandidates[Math.floor(Math.random() * targetCandidates.length)];
     }
-    return null; // Si aucune solution trouvée, retourner null
+    return null;
 }
 
 // Fonction pour calculer une cible plus complexe (mode "Difficile")
 function calculateHardTarget(numbers) {
-    // Par exemple, on pourrait exiger l'utilisation de plus d'opérations ou de nombres plus grands
-    // Ici, pour simplifier, on augmente la cible et les opérations
-
-    const permutations = getPermutations(numbers);
-    for (const perm of permutations) {
-        const [a, b, c, d, e] = perm;
-
-        // Liste des opérateurs à utiliser une fois chacun
-        const operators = ["+", "-", "*", "/"];
-
-        // Générer toutes les combinaisons possibles d'opérateurs
-        const operatorPermutations = getPermutations(operators);
-
-        for (const ops of operatorPermutations) {
-            let currentNumbers = [...perm];
-            let currentOperators = [...ops];
-            let operations = [];
-            let valid = true;
-
-            try {
-                for (let i = 0; i < currentOperators.length; i++) {
-                    const op = currentOperators[i];
-                    let result;
-
-                    if (op === "+") {
-                        result = currentNumbers[0] + currentNumbers[1];
-                    } else if (op === "-") {
-                        result = currentNumbers[0] - currentNumbers[1];
-                        if (result < 0) throw new Error("Résultat négatif");
-                    } else if (op === "*") {
-                        result = currentNumbers[0] * currentNumbers[1];
-                    } else if (op === "/") {
-                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
-                            throw new Error("Division non entière ou par zéro");
-                        }
-                        result = currentNumbers[0] / currentNumbers[1];
-                    }
-
-                    if (!Number.isInteger(result) || result < 0) {
-                        throw new Error("Résultat non valide");
-                    }
-
-                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
-                    // Remplacer les deux premiers nombres par le résultat
-                    currentNumbers = [result, ...currentNumbers.slice(2)];
-                }
-
-                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
-                if (currentNumbers[0] > 0 && currentNumbers[0] > 50) { // Exemple de cible plus élevée
-                    return currentNumbers[0];
-                }
-            } catch (e) {
-                // Si une opération échoue, continuer avec la prochaine combinaison
-                continue;
-            }
-        }
+    const targetCandidates = getAllPossibleResults(numbers);
+    // Filtrer pour des cibles plus élevées
+    const filtered = targetCandidates.filter(num => num > 50);
+    if (filtered.length > 0) {
+        return filtered[Math.floor(Math.random() * filtered.length)];
     }
-    return null; // Si aucune solution trouvée, retourner null
+    return null;
 }
 
 // Fonction pour calculer une cible encore plus complexe (mode "Expert")
 function calculateExpertTarget(numbers) {
-    // Ici, on peut imposer des contraintes supplémentaires comme une cible très élevée
-    // ou plus d'opérations
+    const targetCandidates = getAllPossibleResults(numbers);
+    // Filtrer pour des cibles très élevées
+    const filtered = targetCandidates.filter(num => num > 100);
+    if (filtered.length > 0) {
+        return filtered[Math.floor(Math.random() * filtered.length)];
+    }
+    return null;
+}
 
-    const permutations = getPermutations(numbers);
-    for (const perm of permutations) {
-        const [a, b, c, d, e] = perm;
+// Fonction pour générer toutes les combinaisons possibles et leurs résultats
+function getAllPossibleResults(numbers) {
+    const results = new Set();
 
-        // Liste des opérateurs à utiliser une fois chacun
-        const operators = ["+", "-", "*", "/"];
+    function recurse(currentNumbers) {
+        if (currentNumbers.length === 1) {
+            results.add(currentNumbers[0]);
+            return;
+        }
 
-        // Générer toutes les combinaisons possibles d'opérateurs
-        const operatorPermutations = getPermutations(operators);
+        for (let i = 0; i < currentNumbers.length; i++) {
+            for (let j = 0; j < currentNumbers.length; j++) {
+                if (i !== j) {
+                    const a = currentNumbers[i];
+                    const b = currentNumbers[j];
+                    const remaining = currentNumbers.filter((_, idx) => idx !== i && idx !== j);
 
-        for (const ops of operatorPermutations) {
-            let currentNumbers = [...perm];
-            let currentOperators = [...ops];
-            let operations = [];
-            let valid = true;
-
-            try {
-                for (let i = 0; i < currentOperators.length; i++) {
-                    const op = currentOperators[i];
-                    let result;
-
-                    if (op === "+") {
-                        result = currentNumbers[0] + currentNumbers[1];
-                    } else if (op === "-") {
-                        result = currentNumbers[0] - currentNumbers[1];
-                        if (result < 0) throw new Error("Résultat négatif");
-                    } else if (op === "*") {
-                        result = currentNumbers[0] * currentNumbers[1];
-                    } else if (op === "/") {
-                        if (currentNumbers[1] === 0 || currentNumbers[0] % currentNumbers[1] !== 0) {
-                            throw new Error("Division non entière ou par zéro");
+                    for (const op in operations) {
+                        const func = operations[op];
+                        const result = func(a, b);
+                        if (result !== null && result >= 0) { // Pas de valeurs négatives
+                            recurse([result, ...remaining]);
                         }
-                        result = currentNumbers[0] / currentNumbers[1];
                     }
-
-                    if (!Number.isInteger(result) || result < 0) {
-                        throw new Error("Résultat non valide");
-                    }
-
-                    operations.push(`${currentNumbers[0]} ${op} ${currentNumbers[1]} = ${result}`);
-                    // Remplacer les deux premiers nombres par le résultat
-                    currentNumbers = [result, ...currentNumbers.slice(2)];
                 }
-
-                // Après avoir utilisé tous les opérateurs, le dernier nombre est le résultat final
-                if (currentNumbers[0] > 100) { // Exemple de cible très élevée pour le mode Expert
-                    return currentNumbers[0];
-                }
-            } catch (e) {
-                // Si une opération échoue, continuer avec la prochaine combinaison
-                continue;
             }
         }
     }
-    return null; // Si aucune solution trouvée, retourner null
+
+    recurse(numbers);
+    return Array.from(results);
 }
 
 // Génération de permutations pour tester différentes combinaisons
@@ -401,7 +291,10 @@ function saveState() {
         selectedNumbers: [...selectedNumbers],
         selectedOperator,
         operationsHistory: [...operationsHistory],
-        usedOperators: new Set(usedOperators)
+        usedOperators: new Set(usedOperators),
+        isStandardMode,
+        isHardMode,
+        isExpertMode
     };
     historyStack.push(state);
 }
@@ -519,25 +412,17 @@ calculateButton.addEventListener('click', () => {
             return;
         }
 
-        // En mode "Standard", vérifier que les opérateurs ne sont utilisés qu'une fois
-        if (isStandardMode && usedOperators.has(selectedOperator)) {
-            alert("En mode Standard, chaque opérateur ne peut être utilisé qu'une seule fois.");
+        // En mode "Standard", les opérateurs peuvent être utilisés plusieurs fois
+        // En mode "Difficile" et "Expert", chaque opérateur ne peut être utilisé qu'une seule fois
+        if ((isHardMode || isExpertMode) && usedOperators.has(selectedOperator)) {
+            alert("En mode Difficile/Expert, chaque opérateur ne peut être utilisé qu'une seule fois.");
             return;
         }
 
-        // En mode "Difficile", vérifier que les opérateurs ne sont utilisés qu'une fois
-        if (isHardMode && usedOperators.has(selectedOperator)) {
-            alert("En mode Difficile, chaque opérateur ne peut être utilisé qu'une seule fois.");
-            return;
+        // Ajoute l'opérateur utilisé
+        if (isHardMode || isExpertMode) {
+            usedOperators.add(selectedOperator);
         }
-
-        // En mode "Expert", vérifier que les opérateurs ne sont utilisés qu'une fois
-        if (isExpertMode && usedOperators.has(selectedOperator)) {
-            alert("En mode Expert, chaque opérateur ne peut être utilisé qu'une seule fois.");
-            return;
-        }
-
-        usedOperators.add(selectedOperator);
 
         const operationString = `${nombre1} ${selectedOperator} ${nombre2} = ${resultatOperation}`;
         operationsHistory.push(operationString);
@@ -561,8 +446,8 @@ calculateButton.addEventListener('click', () => {
             alert(`Félicitations ! Vous avez atteint la cible ${cible} avec un score de ${totalScore} points.`);
         } else {
             // Vérifier si toutes les combinaisons possibles sont épuisées sans atteindre la cible
-            if ((isStandardMode || isHardMode || isExpertMode) && operationsHistory.length >= 4 && !nombres.includes(cible)) {
-                alert("Mode Standard/Difficile/Expert terminé sans atteindre la cible. Essayez une nouvelle partie.");
+            if ((isStandardMode || isHardMode || isExpertMode) && operationsHistory.length >= nombres.length - 1 && !nombres.includes(cible)) {
+                alert("Partie terminée sans atteindre la cible. Essayez une nouvelle partie.");
             }
         }
     } else {
@@ -624,19 +509,25 @@ function undoState() {
         selectedOperator = previousState.selectedOperator;
         operationsHistory = [...previousState.operationsHistory];
         usedOperators = new Set(previousState.usedOperators);
+        isStandardMode = previousState.isStandardMode;
+        isHardMode = previousState.isHardMode;
+        isExpertMode = previousState.isExpertMode;
 
         // Réactiver les boutons de mode si nécessaire
-        if (isStandardMode && !previousState.isStandardMode) {
-            standardModeSwitch.checked = false;
-            isStandardMode = false;
-        }
-        if (isHardMode && !previousState.isHardMode) {
+        if (isStandardMode) {
+            standardModeSwitch.checked = true;
             hardModeButton.classList.remove('active');
-            isHardMode = false;
-        }
-        if (isExpertMode && !previousState.isExpertMode) {
             expertModeButton.classList.remove('active');
-            isExpertMode = false;
+        }
+        if (isHardMode) {
+            standardModeSwitch.checked = false;
+            hardModeButton.classList.add('active');
+            expertModeButton.classList.remove('active');
+        }
+        if (isExpertMode) {
+            standardModeSwitch.checked = false;
+            hardModeButton.classList.remove('active');
+            expertModeButton.classList.add('active');
         }
 
         updateDisplay();
@@ -713,8 +604,8 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                 const b = numbers[j];
                 const remaining = numbers.filter((_, idx) => idx !== i && idx !== j);
 
-                for (const op in operationsFunctions) {
-                    const func = operationsFunctions[op];
+                for (const op in operations) {
+                    const func = operations[op];
                     let result = func(a, b);
 
                     if (result === null || !isFinite(result) || !Number.isInteger(result) || result < 0) continue;
@@ -723,7 +614,10 @@ function findSolutionsRecursive(numbers, operations, maxScore, usedOps) {
                     const newNumbers = [result, ...remaining];
 
                     const newUsedOps = new Set(usedOps);
-                    newUsedOps.add(op);
+                    // En mode Standard, les opérateurs peuvent être réutilisés
+                    if (isHardMode || isExpertMode) {
+                        newUsedOps.add(op);
+                    }
                     const score = calculateOperationsScore(newOperations, newUsedOps);
 
                     if (score + (remaining.length * 5) >= maxScore.value) {
@@ -767,15 +661,6 @@ function calculateOperationsScore(operations, usedOps) {
 
 // Initialiser le jeu avec une nouvelle partie
 startNewGame();
-
-// Variables pour le chronomètre
-let timerInterval;
-let timerDuration = 4 * 60; // 4 minutes en secondes (par défaut)
-let currentTime = timerDuration;
-
-// Sélection des éléments du DOM pour le chronomètre
-const timerDisplay = document.getElementById('timer-display');
-const startTimerButton = document.getElementById('start-timer-button');
 
 // Fonction pour démarrer le chronomètre
 function startTimer() {
